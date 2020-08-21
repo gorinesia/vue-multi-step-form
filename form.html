@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+	<meta charset="UTF-8">
+	<title>Multi Step Form</title>
+	<!-- <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" > -->
+	<script src="https://use.fontawesome.com/releases/v5.3.1/js/all.js" defer ></script>
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.8.0/css/bulma.min.css" />
+	<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+</head>
+<body>
+
+<div id="app" class="has-text-centered box">
+	<div class="row">
+		<div class="col-md-8">
+		<h1 class="button is-info is-medium">Step:{{ stepNumber }}</h1>
+		<keep-alive>
+			<form-birthday v-if="stepNumber === 1" @update="updateForm"></form-birthday>
+			<form-name v-if="stepNumber === 2" @update="updateForm"></form-name>
+			<form-contact v-if="stepNumber === 3" @update="updateForm"></form-contact>
+			<form-confirm v-if="stepNumber === 4" v-bind:form="form"></form-confirm>
+		</keep-alive>
+		<br><br>
+		<button class="button is-primary" @click="backStep" v-show="stepNumber != 1">前へ戻る</button>
+		<button class="button is-primary" @click="nextStep" v-show="stepNumber != 4">次へ進む</button>
+		<button class="button is-primary" @click="nextStep" v-show="stepNumber === 4">送信</button>
+
+		</div>
+
+
+		<pre><code>{{ form }}</code></pre>
+
+	</div>
+</div>
+
+<script>
+Vue.component('form-birthday',{
+	template: `<form @change="submit">
+				<br>
+		    <p class="is-size-4 has-text-weight-bold hero is-primary">お客様の情報を入力してください</p>
+				<div class="section">
+					<p class="has-text-info"> -性別- </p>
+					<br>
+					<input type="radio" id="man" value="男性" v-model="picked"> 男性
+					<input type="radio" id="woman" value="女性" v-model="picked"> 女性
+					<br><br>
+					<span>gender: {{ picked }}</span>
+				</div> 
+				<div>	
+					<p class="has-text-info"> -生年月日- </p>
+					<br>
+					<div class="select is-dark">
+						<select id="year" v-model="year">
+							<option disabled value="">Please select one</option>
+							<option v-for="i in 100" :value="i + 1920" :key="i">{{ (i + 1920) | nengo }}</option>
+						</select>
+						<span>year: {{ year }}</span>
+					</div>
+							年
+					<div class="select is-dark">
+						<select v-model="month">
+							<option disabled value="">Please select one</option>
+							<option v-for="month of 12" :key="month">{{ month }}</option>
+						</select>
+						<span>month: {{ month }}</span>
+					</div>
+							月
+					<div class="select is-dark">
+						<select v-model="date">
+							<option disabled value="">Please select one</option>
+							<option v-for="date of 31" :key="date">{{ date }}</option>
+						</select>
+						<span>date: {{ date }}</span>
+					</div>
+							日	
+				</div>
+			</form>`,
+	data: function(){
+		return {
+			picked: null,
+			year: null,
+			month: null,
+			date: null,
+		}
+	},
+	methods: {
+		submit: function(){
+			this.$emit('update',{
+				picked: this.picked,
+				year: this.year,		
+				month: this.month,		
+				date: this.date,		
+			});
+		}
+	},	
+	filters: {
+		nengo(y) {
+			let result;
+			if (y > 2018) {
+				result = `${y} (令和${y-2018}年)`;
+			} else if (y > 1988) {
+				result = `${y} (平成${y-1988}年)`;
+			} else if (y > 1925) {
+				result = `${y} (昭和${y-1925}年)`;
+			} else if (y > 1911) {
+				result = `${y} (大正${y-1911}年)`;
+			}
+			return result;
+		}
+	}
+});  
+
+Vue.component('form-name',{
+	template: `<form @change="submit">
+		    <br>
+		    <p class="is-size-4 has-text-weight-bold hero is-primary ">以下にお答えください</p>
+				<br>
+				<div>
+					<p class="has-text-info">-現在、生命保険に加入されていますか？-</p>
+					<label for="Gender"></label>
+					<input type="radio" id="yes" value="はい" @click="ok = !ok" v-model="picked1"> はい
+					<input type="radio" id="no" value="いいえ" @click="ok = !ok" v-model="picked1"> いいえ
+					<br><br>
+					<span>select: {{ picked1 }}</span>
+				</div>	
+				<br><br>
+				<div v-if="ok">
+					<p class="has-text-info">-現在入院中ですか。または、最近3ヶ月以内に医師の診察・検査の結果、入院・手術をすすめられたことはありますか？-</p>
+						<label for="Gender"></label>
+						<input type="radio" id="yes" value="はい" @click="ok2 = !ok2" v-model="picked2"> はい
+						<input type="radio" id="no" value="いいえ" @click="ok2 = !ok2" v-model="picked2"> いいえ
+						<br><br>
+						<span>select: {{ picked2 }}</span>
+			  </div>
+				<br><br>
+				<div v-if="ok2">
+					<p class="has-text-info">-過去5年以内に、病気やけがで手術をうけたこと、または継続して7日以上の入院をしたことがありますか？-</p>
+					<label for="Gender"></label>
+					<input type="radio" id="yes" value="はい" v-model="picked3"> はい
+					<input type="radio" id="no" value="いいえ" v-model="picked3"> いいえ
+					<br><br>
+					<span>select: {{ picked3 }}</span>
+				</div>
+				</form>`,
+	data: function(){
+		return {
+				picked1: null,
+				picked2: null,
+				picked3: null,
+				ok: false,
+				ok2: false
+		}
+	},
+	methods: {
+		submit: function(){
+			this.$emit('update',{
+				picked1: this.picked1,
+				picked2: this.picked2,
+				picked3: this.picked3,
+			});
+		},
+		change() {
+			return{
+				ok: true
+			}
+		}
+	}
+});
+
+Vue.component('form-contact',{
+	template: `<form @input="submit">
+		    <br>
+		    <p class="is-size-4 has-text-weight-bold hero is-primary">ご相談内容をご記入ください</p>
+	      <br>
+				<p class="has-text-info">-ご相談内容-</p>
+				<br><br>
+				<div>
+					<textarea class="textarea is-info is-large" v-model="textMessage"></textarea>
+				</div>
+				<pre>TextMessage: {{ textMessage }}</pre>
+				</form>`,
+	data: function(){
+		return {
+			textMessage: null
+		}
+	},
+	methods: {
+		submit: function(){
+			this.$emit('update',{
+				textMessage: this.textMessage
+			});
+		}
+	}
+});
+
+Vue.component('form-confirm', {
+	template: `<div>
+		<br>
+		<h2 class="is-size-4 has-text-weight-bold hero is-primary">Confirmation</h2>
+		<p class="has-text-info"> -性別- </p>
+		<p>gender: {{ form.picked }}</p>
+		<br>
+		<p class="has-text-info"> -生年月日- </p>
+		<p>birthday: {{ form.year }}年{{ form.month }}月{{ form.date }}日</p>
+		<br>
+		<p class="has-text-info">-現在、生命保険に加入されていますか？-</p>
+		<p>question1: {{ form.picked1 }}</p>
+		<br>
+		<p class="has-text-info">-現在入院中ですか。または、最近3ヶ月以内に医師の診察・検査の結果、入院・手術をすすめられたことはありますか？-</p>
+		<p>question2: {{ form.picked2 }}</p>
+		<br>
+		<p class="has-text-info">-過去5年以内に、病気やけがで手術をうけたこと、または継続して7日以上の入院をしたことがありますか？-</p>
+		<p>question3: {{ form.picked3 }}</p>
+		<br>
+		<p class="has-text-info">-ご相談内容-</p>
+		<p>textMessage: {{ form.textMessage }}</p>
+		<br>
+		</div>`,
+	props:{
+		form: Object
+	},
+});
+
+const app = new Vue({
+	el: '#app',
+	data: {
+		stepNumber: 1,
+		form: {
+			picked: '',
+			year: null,
+			month: null,
+			date: null,
+			picked1: null,
+			picked2: null,
+			picked3: null,
+			textMessage: null
+		}
+	},
+	methods:{
+		updateForm:function(formData){
+			Object.assign(this.form, formData);
+		},
+		backStep:function(){
+			this.stepNumber--;
+		},			
+		nextStep:function(){
+			this.stepNumber++;
+		},
+	}
+});
+</script>
+</body>
+</html>
