@@ -14,15 +14,18 @@
 		<div class="col-md-8">
 		<h1 class="button is-info is-medium">Step:{{ stepNumber }}</h1>
 		<keep-alive>
+			<form-init v-if="stepNumber === 0"></form-init>
 			<form-birthday v-if="stepNumber === 1" @update="updateForm"></form-birthday>
 			<form-name v-if="stepNumber === 2" @update="updateForm"></form-name>
 			<form-contact v-if="stepNumber === 3" @update="updateForm"></form-contact>
 			<form-confirm v-if="stepNumber === 4" v-bind:form="form"></form-confirm>
+			<form-finish v-if="stepNumber === 5"></form-finish>
 		</keep-alive>
 		<br><br>
-		<button class="button is-primary" @click="backStep" v-show="stepNumber != 1">前へ戻る</button>
-		<button class="button is-primary" @click="nextStep" v-show="stepNumber != 4">次へ進む</button>
-		<button class="button is-primary" @click="nextStep" v-show="stepNumber === 4">送信</button>
+		<button class="button is-primary" @click="backStep" v-show="stepNumber != 0 && stepNumber < 5">前へ戻る</button>
+		<button class="button is-primary" @click="nextStep" v-show="stepNumber != 4 && stepNumber < 5">次へ進む</button>
+		<button class="button is-info is-hovered" @click="nextStep" v-show="stepNumber === 4">送信</button>
+		<button class="button is-primary" @click="goHome" v-show="stepNumber === 5">ホームへ戻る</button>
 
 		</div>
 
@@ -33,6 +36,22 @@
 </div>
 
 <script>
+Vue.component('form-init', {
+	template: `<div>
+		<br><br>
+		<p class="is-size-4 has-text-info">-アンケート開始-</p>
+		<br>
+		</div>`,
+});
+
+Vue.component('form-finish', {
+	template: `<div>
+		<br><br>
+		<p class="is-size-4 has-text-info">-ご協力ありがとうございました。-</p>
+		<br>
+		</div>`,
+});
+
 Vue.component('form-birthday',{
 	template: `<form @change="submit">
 				<br>
@@ -157,11 +176,6 @@ Vue.component('form-name',{
 				picked2: this.picked2,
 				picked3: this.picked3,
 			});
-		},
-		change() {
-			return{
-				ok: true
-			}
 		}
 	}
 });
@@ -223,9 +237,9 @@ Vue.component('form-confirm', {
 const app = new Vue({
 	el: '#app',
 	data: {
-		stepNumber: 1,
+		stepNumber: 0,
 		form: {
-			picked: '',
+			picked: null,
 			year: null,
 			month: null,
 			date: null,
@@ -245,8 +259,20 @@ const app = new Vue({
 		nextStep:function(){
 			this.stepNumber++;
 		},
+		goHome() {
+			this.stepNumber = 0,
+			this.form.picked = null,
+			this.form.year = null,
+			this.form.month = null,
+			this.form.date = null,
+			this.form.picked1 = null,
+			this.form.picked2 = null,
+			this.form.picked3 = null,
+			this.form.textMessage = null
+		}
 	}
 });
+
 </script>
 </body>
 </html>
