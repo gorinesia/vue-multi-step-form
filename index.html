@@ -38,10 +38,18 @@ Vue.component('form-birthday',{
 				<label for="Birthday">Birthday</label>
 				<input type="date" class="form-control" v-model="birthday" placeholder="Enter Birthday">
 				</div>
+				<select v-model="selected">
+					<option disabled value="">Please select one</option>
+					<option>A</option>
+					<option>B</option>
+					<option>C</option>
+				</select>
+				<span>Selected: {{ selected }}</span>
 				</form>`,
 	data: function(){
 		return {
-			birthday: null
+			birthday: null,
+			selected: ''
 		}
 	},
 	methods: {

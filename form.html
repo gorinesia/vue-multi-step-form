@@ -10,7 +10,7 @@
 <body>
 
 <div id="app" class="has-text-centered box">
-	<div class="row">
+	<div class="message">
 		<div class="col-md-8">
 		<h1 class="button is-info is-medium">Step:{{ stepNumber }}</h1>
 		<keep-alive>
@@ -59,55 +59,52 @@ Vue.component('form-birthday',{
 				<div class="section">
 					<p class="has-text-info"> -性別- </p>
 					<br>
-					<input type="radio" id="man" value="男性" v-model="picked"> 男性
-					<input type="radio" id="woman" value="女性" v-model="picked"> 女性
+					<input type="radio" id="man" value="男性" v-model="gender"> 男性
+					<input type="radio" id="woman" value="女性" v-model="gender"> 女性
 					<br><br>
-					<span>gender: {{ picked }}</span>
+					<span>gender: {{ gender }}</span>
 				</div> 
 				<div>	
 					<p class="has-text-info"> -生年月日- </p>
 					<br>
 					<div class="select is-dark">
-						<select id="year" v-model="year">
+						<select v-model="year">
 							<option disabled value="">Please select one</option>
 							<option v-for="i in 100" :value="i + 1920" :key="i">{{ (i + 1920) | nengo }}</option>
 						</select>
 						<span>year: {{ year }}</span>
-					</div>
-							年
+					</div>年
 					<div class="select is-dark">
 						<select v-model="month">
 							<option disabled value="">Please select one</option>
-							<option v-for="month of 12" :key="month">{{ month }}</option>
-						</select>
+							<option v-for="month of 12" :key="month">{{ month + '月' }}</option>
+						</select>	
 						<span>month: {{ month }}</span>
-					</div>
-							月
+					</div>月
 					<div class="select is-dark">
 						<select v-model="date">
 							<option disabled value="">Please select one</option>
-							<option v-for="date of 31" :key="date">{{ date }}</option>
-						</select>
+							<option v-for="date of 31" :key="date">{{ date + '日' }}</option>
+						</select>	
 						<span>date: {{ date }}</span>
-					</div>
-							日	
+					</div>日
 				</div>
 			</form>`,
 	data: function(){
 		return {
-			picked: null,
-			year: null,
-			month: null,
-			date: null,
+			gender: null,
+			year: '',
+			month: '',
+		  date: '',
 		}
 	},
 	methods: {
 		submit: function(){
 			this.$emit('update',{
-				picked: this.picked,
-				year: this.year,		
+				gender: this.gender,
+				year: this.year,
 				month: this.month,		
-				date: this.date,		
+				date: this.date
 			});
 		}
 	},	
@@ -136,35 +133,35 @@ Vue.component('form-name',{
 				<div>
 					<p class="has-text-info">-現在、生命保険に加入されていますか？-</p>
 					<label for="Gender"></label>
-					<input type="radio" id="yes" value="はい" @click="ok = !ok" v-model="picked1"> はい
-					<input type="radio" id="no" value="いいえ" @click="ok = !ok" v-model="picked1"> いいえ
+					<input type="radio" id="yes" value="はい" @click="ok = !ok" v-model="question1"> はい
+					<input type="radio" id="no" value="いいえ" @click="ok = !ok" v-model="question1"> いいえ
 					<br><br>
-					<span>select: {{ picked1 }}</span>
+					<span>select: {{ question1 }}</span>
 				</div>	
 				<br><br>
 				<div v-if="ok">
 					<p class="has-text-info">-現在入院中ですか。または、最近3ヶ月以内に医師の診察・検査の結果、入院・手術をすすめられたことはありますか？-</p>
 						<label for="Gender"></label>
-						<input type="radio" id="yes" value="はい" @click="ok2 = !ok2" v-model="picked2"> はい
-						<input type="radio" id="no" value="いいえ" @click="ok2 = !ok2" v-model="picked2"> いいえ
+						<input type="radio" id="yes" value="はい" @click="ok2 = !ok2" v-model="question2"> はい
+						<input type="radio" id="no" value="いいえ" @click="ok2 = !ok2" v-model="question2"> いいえ
 						<br><br>
-						<span>select: {{ picked2 }}</span>
+						<span>select: {{ question2 }}</span>
 			  </div>
 				<br><br>
 				<div v-if="ok2">
 					<p class="has-text-info">-過去5年以内に、病気やけがで手術をうけたこと、または継続して7日以上の入院をしたことがありますか？-</p>
 					<label for="Gender"></label>
-					<input type="radio" id="yes" value="はい" v-model="picked3"> はい
-					<input type="radio" id="no" value="いいえ" v-model="picked3"> いいえ
+					<input type="radio" id="yes" value="はい" v-model="question3"> はい
+					<input type="radio" id="no" value="いいえ" v-model="question3"> いいえ
 					<br><br>
-					<span>select: {{ picked3 }}</span>
+					<span>select: {{ question3 }}</span>
 				</div>
 				</form>`,
 	data: function(){
 		return {
-				picked1: null,
-				picked2: null,
-				picked3: null,
+				question1: null,
+				question2: null,
+				question3: null,
 				ok: false,
 				ok2: false
 		}
@@ -172,9 +169,9 @@ Vue.component('form-name',{
 	methods: {
 		submit: function(){
 			this.$emit('update',{
-				picked1: this.picked1,
-				picked2: this.picked2,
-				picked3: this.picked3,
+				question1: this.question1,
+				question2: this.question2,
+				question3: this.question3,
 			});
 		}
 	}
@@ -211,19 +208,19 @@ Vue.component('form-confirm', {
 		<br>
 		<h2 class="is-size-4 has-text-weight-bold hero is-primary">Confirmation</h2>
 		<p class="has-text-info"> -性別- </p>
-		<p>gender: {{ form.picked }}</p>
+		<p>gender: {{ form.gender }}</p>
 		<br>
 		<p class="has-text-info"> -生年月日- </p>
 		<p>birthday: {{ form.year }}年{{ form.month }}月{{ form.date }}日</p>
 		<br>
 		<p class="has-text-info">-現在、生命保険に加入されていますか？-</p>
-		<p>question1: {{ form.picked1 }}</p>
+		<p>question1: {{ form.question1 }}</p>
 		<br>
 		<p class="has-text-info">-現在入院中ですか。または、最近3ヶ月以内に医師の診察・検査の結果、入院・手術をすすめられたことはありますか？-</p>
-		<p>question2: {{ form.picked2 }}</p>
+		<p>question2: {{ form.question2 }}</p>
 		<br>
 		<p class="has-text-info">-過去5年以内に、病気やけがで手術をうけたこと、または継続して7日以上の入院をしたことがありますか？-</p>
-		<p>question3: {{ form.picked3 }}</p>
+		<p>question3: {{ form.question3 }}</p>
 		<br>
 		<p class="has-text-info">-ご相談内容-</p>
 		<p>textMessage: {{ form.textMessage }}</p>
@@ -239,13 +236,13 @@ const app = new Vue({
 	data: {
 		stepNumber: 0,
 		form: {
-			picked: null,
+			gender: null,
 			year: null,
 			month: null,
 			date: null,
-			picked1: null,
-			picked2: null,
-			picked3: null,
+			question1: null,
+			question2: null,
+			question3: null,
 			textMessage: null
 		}
 	},
@@ -261,13 +258,13 @@ const app = new Vue({
 		},
 		goHome() {
 			this.stepNumber = 0,
-			this.form.picked = null,
+			this.form.gender = null,
 			this.form.year = null,
 			this.form.month = null,
 			this.form.date = null,
-			this.form.picked1 = null,
-			this.form.picked2 = null,
-			this.form.picked3 = null,
+			this.form.question1 = null,
+			this.form.question2 = null,
+			this.form.question3 = null,
 			this.form.textMessage = null
 		}
 	}
